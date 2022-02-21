@@ -15,11 +15,15 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 ## How to run this app on your local environment 
 
 - Pull the latest docker image from Dockerhub  [https://hub.docker.com/r/hsolomondocker/ondeck_vip/tags](url)
-    Or simply run the command below to pull the latest image tags 
+
+     Or simply run this command to pull the latest image tag
+
     `docker pull hsolomondocker/ondeck_vip`
 
-    Run this command to confirm the image 
+    Run this command to confirm the image is loaded onto your host machine 
+
     ` docker image ls `
+
     you should see vip docker image listed `hsolomondocker/ondeck_vip:latest `
   
 - Run this command to launch the conainter with ondeck vip app 
@@ -41,7 +45,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 
       `curl --header "Content-Type: application/json" --request POST --data '{"name":"Henok","email":"solomonmail88@gmail.com"}' http://localhost:9090/vip/create | json_pp`
 
-      after running this command and if its successfull you should get a response json with the created vip record on your terminal 
+     If the request is successful you should see a response json with the newly created vip record
       
       sample response 
 
@@ -109,7 +113,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
       ]
       `
 
-    *we are using H2 in mememory DB that means the DB uses its runtime memory to store the records , this means that any records that you have created will be lost after restarting vip docker conatiner ** Its done this way because the app is intended only for demonstration purpose*
+    *we are using H2 in mememory DB that means the DB uses its runtime memory to store the records , this means any records that you created will be lost if you restart your docker conatiner ** Its done this way because the app is intended only for demonstration purpose*
 
   
 3)  GET  **vip/Accept/{vipRecordId}** & **vip/reject/{vipRecordId}** - mark the invitation status of vip record to **ACCEPTTED OR REJECTED**  
@@ -130,19 +134,16 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 
        sample response 
 
-            `
-             {
-         "createdBy" : "system",
-         "createdDate" : "2022-02-21T20:40:28.930234",
-         "email" : "solomonmail88@gmail.com",
-         "invitationConfirmDate" : "2022-02-21T21:17:36.92906",
-         "invitationConfirmRemark" : null,
-         "invitationSentDate" : "2022-02-21T20:40:35.044186",
-         "invitationStatus" : "ACCEPTED",
-         "name" : "Henok",
-         "updatedBy" : "system",
-         "updatedDate" : "2022-02-21T20:40:28.930239",
-         "vipRecordId" : "3bfc5c85-97b5-40bf-bc2f-fdc5041edc41"
-      }`
-    
-    
+        `    {
+                 "createdBy" : "system",
+                 "createdDate" : "2022-02-21T20:40:28.930234",
+                 "email" : "solomonmail88@gmail.com",
+                 "invitationConfirmDate" : "2022-02-21T21:17:36.92906",
+                 "invitationConfirmRemark" : null,
+                 "invitationSentDate" : "2022-02-21T20:40:35.044186",
+                 "invitationStatus" : "ACCEPTED",
+                 "name" : "Henok",
+                 "updatedBy" : "system",
+                 "updatedDate" : "2022-02-21T20:40:28.930239",
+                 "vipRecordId" : "3bfc5c85-97b5-40bf-bc2f-fdc5041edc41"
+              }`
