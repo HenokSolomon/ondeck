@@ -20,7 +20,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 
     `docker pull hsolomondocker/ondeck_vip`
 
-    Run this command to confirm the image is loaded onto your host machine 
+    Run this command to confirm if the image is loaded to your host machine 
 
     ` docker image ls `
 
