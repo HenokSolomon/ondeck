@@ -15,7 +15,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 ## How to run this app on your local environment 
 
 
-- Pull the latest docker image from Dockerhub  [https://hub.docker.com/r/hsolomondocker/ondeck_vip/tags](url)
+- Pull the latest docker image from Dockerhub [here](https://hub.docker.com/r/hsolomondocker/ondeck_vip/tags)
 
      Or simply run this command to pull the latest image tag
 
