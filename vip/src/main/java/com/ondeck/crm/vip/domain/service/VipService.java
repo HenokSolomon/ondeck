@@ -5,6 +5,7 @@ import com.ondeck.crm.vip.domain.entity.VipRecord;
 import com.ondeck.crm.vip.domain.exceptions.ServiceException;
 import com.ondeck.crm.vip.dto.VipRecordDetailsDto;
 import com.ondeck.crm.vip.dto.VipRecordDto;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,4 +19,8 @@ public interface VipService {
     void sendSignupInvitationEmail(VipRecord vipRecord) throws Exception;
 
     List<VipRecordDetailsDto> findAll();
+
+    List<VipRecord> findAllPendingEmailInvitation();
+
+    void sendEmailInvitationRetryScheduledJob();
 }

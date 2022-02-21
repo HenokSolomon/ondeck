@@ -17,5 +17,6 @@ public class VipRecordDto {
     private String email;
     private String createdBy;
     private LocalDateTime createdDate;
+    private boolean isSendInvitation = true;
 
 }

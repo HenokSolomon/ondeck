@@ -7,7 +7,7 @@ import com.ondeck.crm.vip.domain.repository.VipRecordRepository;
 import com.ondeck.crm.vip.dto.VipRecordDetailsDto;
 import com.ondeck.crm.vip.dto.VipRecordDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -25,8 +25,8 @@ public class VipServiceImpl implements VipService {
     private static final String DEFAULT_INVITATION_EMAIL_SUBJECT = "Your Vip Invitation";
     private static final String DEFAULT_EMAIL_FROM = "solomonmail88@gmail.com";
     private static final String INVITATION_EMAIL_TEMPLATE_NAME = "vip-invitation-email";
-    private VipRecordRepository vipRecordRepository;
-    private MessagingService messagingService;
+    private final VipRecordRepository vipRecordRepository;
+    private final MessagingService messagingService;
 
 
     public VipServiceImpl(VipRecordRepository vipRecordRepository, MessagingService messagingService) {
@@ -69,15 +69,20 @@ public class VipServiceImpl implements VipService {
 
         try {
 
-            /* try to send invitation email */
-            sendSignupInvitationEmail( vipRecord );
+            //this is for testing failed or unsent invitation email
+            if (vipRecordDto.isSendInvitation()) {
 
-            /*if invitation is ok , change its Inv..status and inv.. sentDate then update the vipRecord , */
-            vipRecord.setInvitationStatus( InvitationStatus.PENDING_CONFIRM );
-            vipRecord.setInvitationSentDate( LocalDateTime.now() );
+                /* try to send invitation email */
+                sendSignupInvitationEmail( vipRecord );
 
-            /* update */
-            vipRecord = vipRecordRepository.save( vipRecord );
+                /*if invitation is ok , change its Inv..status and inv.. sentDate then update the vipRecord , */
+                vipRecord.setInvitationStatus( InvitationStatus.PENDING_CONFIRM );
+                vipRecord.setInvitationSentDate( LocalDateTime.now() );
+
+                /* update */
+                vipRecord = vipRecordRepository.save( vipRecord );
+
+            }
 
         } catch (Exception ex) {
             /* if sending email failed , then do nothing , the email portion will be tried latter by batch job */
@@ -92,12 +97,12 @@ public class VipServiceImpl implements VipService {
     public VipRecordDetailsDto confirmInvitation(UUID vidRecordId, InvitationStatus invitationStatus) {
 
         /* find existing vip by its id , exit with error if doesn't exit  */
-        var existingVip = vipRecordRepository.findVipRecordByVipRecordId(vidRecordId);
+        var existingVip = vipRecordRepository.findVipRecordByVipRecordId( vidRecordId );
         if (existingVip == null) {
             throw new ServiceException( "vip record doesn't exist ", ServiceException.INVALID_VIP_RECORD );
         }
 
-        if(existingVip.getInvitationStatus() != InvitationStatus.PENDING_CONFIRM) {
+        if (existingVip.getInvitationStatus() != InvitationStatus.PENDING_CONFIRM) {
             throw new ServiceException( "invalid vip record status", ServiceException.INVALID_VIP_RECORD );
         }
 
@@ -111,20 +116,76 @@ public class VipServiceImpl implements VipService {
     }
 
 
+    @Override
     public List<VipRecordDetailsDto> findAll() {
 
         List<VipRecordDetailsDto> vipRecordDetailsDtoList = new ArrayList<>();
 
         List<VipRecord> vipRecordList = vipRecordRepository.findAll();
 
-        if(vipRecordList != null) {
+        if (vipRecordList != null) {
 
             vipRecordDetailsDtoList = vipRecordList.stream().map( vip -> buildVipDetailDTO( vip ) )
-                    .sorted(Comparator.comparing(VipRecordDetailsDto::getUpdatedDate))
-                    .collect( Collectors.toList());
+                    .sorted( Comparator.comparing( VipRecordDetailsDto::getUpdatedDate ) )
+                    .collect( Collectors.toList() );
         }
 
         return vipRecordDetailsDtoList;
+    }
+
+    @Override
+    public List<VipRecord> findAllPendingEmailInvitation() {
+
+        return vipRecordRepository.findAllByInvitationStatus( InvitationStatus.PENDING );
+    }
+
+    @Override
+    public void sendSignupInvitationEmail(VipRecord vipRecord) throws Exception {
+
+        /* validates the emails */
+        validateEmail( vipRecord.getEmail() );
+
+        Map<String, Object> templateParam = new HashMap<>();
+        templateParam.put( "recipientName", vipRecord.getName() );
+        templateParam.put( "vipRecordId", vipRecord.getVipRecordId() );
+
+        messagingService.sendEmail( DEFAULT_EMAIL_FROM, vipRecord.getEmail(), DEFAULT_INVITATION_EMAIL_SUBJECT, INVITATION_EMAIL_TEMPLATE_NAME, templateParam );
+    }
+
+    @Override
+    @Scheduled(cron = "*/10 * * * * *")
+    public void sendEmailInvitationRetryScheduledJob() {
+
+        log.info( "EmailRetryJob triggered " + LocalDateTime.now() );
+
+        List<VipRecord> vipRecordList = findAllPendingEmailInvitation();
+
+        if (vipRecordList != null) {
+
+            vipRecordList.stream().forEach( vipRecord -> {
+
+                try {
+
+                    log.info( "EmailRetryJob , sending invitation email for email " + vipRecord.getEmail() );
+
+                    sendSignupInvitationEmail( vipRecord );
+
+                    /*if invitation is ok , change its Inv..status and inv.. sentDate then update the vipRecord , */
+                    vipRecord.setInvitationStatus( InvitationStatus.PENDING_CONFIRM );
+                    vipRecord.setInvitationSentDate( LocalDateTime.now() );
+
+                    vipRecordRepository.save( vipRecord );
+
+                    log.info( "EmailRetryJob , invitation email successful for email " + vipRecord.getEmail() );
+
+                } catch (Exception e) {
+                    log.error( "EmailRetryJob , failed sending invitation email for email " + vipRecord.getEmail() );
+                }
+            } );
+        }
+
+
+        log.info( "EmailRetryJob completed " + LocalDateTime.now() );
     }
 
 
@@ -139,19 +200,6 @@ public class VipServiceImpl implements VipService {
         if (!match) {
             throw new ServiceException( "invalid email address " + email, ServiceException.INVALID_EMAIL_FORMAT );
         }
-    }
-
-    @Override
-    public void sendSignupInvitationEmail(VipRecord vipRecord) throws Exception {
-
-        /* validates the emails */
-        validateEmail( vipRecord.getEmail() );
-
-        Map<String, Object> templateParam = new HashMap<>();
-        templateParam.put( "recipientName", vipRecord.getName() );
-        templateParam.put( "vipRecordId", vipRecord.getVipRecordId());
-
-        messagingService.sendEmail( DEFAULT_EMAIL_FROM, vipRecord.getEmail(), DEFAULT_INVITATION_EMAIL_SUBJECT, INVITATION_EMAIL_TEMPLATE_NAME, templateParam );
     }
 
     private VipRecordDetailsDto buildVipDetailDTO(VipRecord vipRecord) {

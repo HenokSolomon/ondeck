@@ -32,6 +32,15 @@ public class VipRestController {
 
     }
 
+    @PostMapping("/create-no-invitation")
+    @ResponseBody
+    public VipRecordDetailsDto createNoInvitation(@RequestBody CreateVipRequest request) {
+
+        var dto = VipRecordDto.builder().email( request.getEmail() ).name( request.getName() ).isSendInvitation( false ).build();
+
+        return vipService.createVipRecord( dto );
+
+    }
     @GetMapping("/accept/{vipRecordId}")
     @ResponseBody
     public VipRecordDetailsDto accept(@PathVariable("vipRecordId") UUID vipRecordId) {
