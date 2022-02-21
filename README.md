@@ -12,36 +12,24 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 - docker
 - git , github 
 
-## Basic DB Entities  
-The app is built up on two basic Entitues 
-
-- VipRecord 
--   
-
-
-- InvitationStatus 
-
-
-
 ## How to run this app on your local environment 
 
-- clone the docker image from Docker hub 
-  ` docker pull hsolomondocker/ondeck_vip `
+- Pull the latest docker image from Dockerhub  [https://hub.docker.com/r/hsolomondocker/ondeck_vip/tags](url)
+    Or simply run the command below to pull the latest image tags 
+    `docker pull hsolomondocker/ondeck_vip`
+
+    Run this command to confirm the image 
+    ` docker image ls `
+    you should see vip docker image listed `hsolomondocker/ondeck_vip:latest `
   
-- Run below command to confirm the image 
-- 
-  ` docker image ls `
-  
-  you should see vip docker image listed `hsolomondocker/ondeck_vip:latest `
-  
-- Run below command to launch the conainter with ondeck vip app 
+- Run this command to launch the conainter with ondeck vip app 
    
    ` docker run -it -p9090:8080 hsolomondocker/ondeck_vip:latest `
    
     **Make sure that port 9090 is open in your machine and also not blocked by any firewall setup you may have**
    
 - You can Run `docker ps ` to verify that the container is running on your local docker engine
-- Open your browser and go to `(http://localhost:9090/api-docs.html)` you should see swagger api doc page
+- Open your browser and go to [http://localhost:9090/api-docs.html](url) you should see swagger api doc page
 
 ## How to test the functionalities 
 
@@ -155,7 +143,6 @@ The app is built up on two basic Entitues
          "updatedBy" : "system",
          "updatedDate" : "2022-02-21T20:40:28.930239",
          "vipRecordId" : "3bfc5c85-97b5-40bf-bc2f-fdc5041edc41"
-      }
-      `
+      }`
     
     
