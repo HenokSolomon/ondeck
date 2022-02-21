@@ -34,7 +34,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
     **Make sure that port 9090 is open in your machine and also not blocked by any firewall setup you may have**
    
 - You can Run `docker ps ` to verify that the container is running on your local docker engine
-- Open your browser and go to [http://localhost:9090/api-docs.html](url) you should see swagger api doc page
+- Open your browser and go to (http://localhost:9090/api-docs.html) you should see swagger api doc page
 
 ## How to test the functionalities 
 
