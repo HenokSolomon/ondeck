@@ -8,7 +8,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 - Gradle build tool 
 - H2 in memory DB
 - java SMTP email client 
-- thymeleaf for templating engin 
+- thymeleaf for templating engine 
 - docker
 - git , github 
 
