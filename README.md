@@ -12,6 +12,17 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 - docker
 - git , github 
 
+## Basic DB Entities  
+The app is built up on two basic Entitues 
+
+- VipRecord 
+-   
+
+
+- InvitationStatus 
+
+
+
 ## How to run this app on your local environment 
 
 - clone the docker image from Docker hub 
@@ -64,10 +75,21 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
       
      
 
-      **Also this endpoint will try to send an actual invitation email to the destination vip email address**
+      *Also this endpoint will try to **send an actual invitation email** to the destination vip email address*
         hence please go a head and check the inbox
 
        Alternatively you can call `GET /vip/findAll` to verify that vip record is created
+
+      > The app is built with generic error handler , that means if your call to any of vip api's ended with error then you should expect json reponse that looks like below - with different error message ...
+
+        `      {
+           "error" : "bad request , please fix your request and try again",
+           "message" : "vip record doesn't exist ",
+           "path" : "/vip/accept/250cb745-82e8-431b-8532-a6e0af9f53d4",
+           "status" : 400,
+           "timestamp" : "2022-02-21"
+        }
+`
 
 2)  GET  **vip/findAll** - is a simple restful endpoint to list all registred vip records in the current H2 in memory DB
 
@@ -99,12 +121,41 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
       ]
       `
 
-    **Note that - we are using H2 in mememory DB that means the DB uses its runtime memory to store the records , this means that any records that you created will be lost after restarting conatiner, I thought this should be enough as its for demonistration purpose**
-
+    *we are using H2 in mememory DB that means the DB uses its runtime memory to store the records , this means that any records that you have created will be lost after restarting vip docker conatiner ** Its done this way because the app is intended only for demonstration purpose*
 
   
-3)  GET  **vip/Accept/{{vipRecordId}** - mark the invitation status of vip record with vipRecordId to **ACCEPTTED**  
+3)  GET  **vip/Accept/{vipRecordId}** & **vip/reject/{vipRecordId}** - mark the invitation status of vip record to **ACCEPTTED OR REJECTED**  
 
+      > The invitation email that is sent during the create operation should have two embedded buttons 
 
- 
+      > `Accept Invitation` & `No Thanks `
+      
+      > You can click either of this buttons to test accept and reject endpoints 
+      
+      you can also do it using curl command 
+      
+      > But First call the `/vip/findAll` and copy the vipRecordId value which you want to update 
+
+      then 
+
+      `curl --header "Content-Type: application/json" --request GET http://localhost:9090/vip/accept/250cb745-82e8-431b-8532-a6e0af9f53d4 | json_pp`
+
+       sample response 
+
+            `
+             {
+         "createdBy" : "system",
+         "createdDate" : "2022-02-21T20:40:28.930234",
+         "email" : "solomonmail88@gmail.com",
+         "invitationConfirmDate" : "2022-02-21T21:17:36.92906",
+         "invitationConfirmRemark" : null,
+         "invitationSentDate" : "2022-02-21T20:40:35.044186",
+         "invitationStatus" : "ACCEPTED",
+         "name" : "Henok",
+         "updatedBy" : "system",
+         "updatedDate" : "2022-02-21T20:40:28.930239",
+         "vipRecordId" : "3bfc5c85-97b5-40bf-bc2f-fdc5041edc41"
+      }
+      `
+    
     
