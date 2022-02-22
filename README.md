@@ -1,4 +1,4 @@
-## Ondeck VIP management
+## Ondeck vip app
 
 This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code-Infrastructure-Engineer-Take-Home-Test-0987b15357f941ab80ca79c16b23c9cd)
 
