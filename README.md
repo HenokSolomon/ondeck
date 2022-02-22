@@ -5,6 +5,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 ## Tools Used 
 - Java 11 
 - Spring Boot 2.6.3
+- Tomcat embeded webserver
 - Gradle build tool 
 - H2 in memory DB
 - Restful API
