@@ -7,12 +7,17 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 - Spring Boot 2.6.3
 - Gradle build tool 
 - H2 in memory DB
+- Restful API
 - java SMTP email client 
 - thymeleaf for templating engine 
 - docker
 - git , github 
 
+## Vip DB Entities 
+
 ![vip app db schema](vip-db-imge.png)
+
+
 
 ## How to run this app on your local environment 
 
