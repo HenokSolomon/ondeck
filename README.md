@@ -12,7 +12,7 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 - docker
 - git , github 
 
-![vip app db schema](vip-db-imge)
+![vip app db schema](vip-db-imge.png)
 
 ## How to run this app on your local environment 
 
