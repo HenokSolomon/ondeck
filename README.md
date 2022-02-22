@@ -45,6 +45,19 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 
 ## How to test the functionalities 
 
+>Note that basic validations are already implemented by all services in this app.
+>This include Email format validation , duplicate email prevention or prevention for duplicate vip record and e.t.c 
+>The app is built with generic error handler That means if your call to any of vip apis ended with error then you should expect json reponse that looks like below & with different error message
+
+` {
+    "error" : "bad request , please fix your request and try again",
+    "message" : "vip record doesn't exist ",
+    "path" : "/vip/accept/250cb745-82e8-431b-8532-a6e0af9f53d4",
+    "status" : 400,
+    "timestamp" : "2022-02-21"
+}`
+
+
 1)  POST  **/vip/create**  - is a simple restful endpoint to create a VIP record and send invitation to the given email 
 
       open your terminal and execute this curl command 
@@ -80,16 +93,6 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
 
        Alternatively you can call `GET /vip/findAll` to verify that vip record is created
 
-      > The app is built with generic error handler , that means if your call to any of vip api's ended with error then you should expect json reponse that looks like below - with different error message ...
-
-        `      {
-           "error" : "bad request , please fix your request and try again",
-           "message" : "vip record doesn't exist ",
-           "path" : "/vip/accept/250cb745-82e8-431b-8532-a6e0af9f53d4",
-           "status" : 400,
-           "timestamp" : "2022-02-21"
-        }
-`
 
 2)  GET  **vip/findAll** - is a simple restful endpoint to list all registred vip records in the current H2 in memory DB
 
@@ -150,8 +153,31 @@ This is solution for assesement [here](https://odteam.notion.site/odteam/No-Code
                  "invitationConfirmRemark" : null,
                  "invitationSentDate" : "2022-02-21T20:40:35.044186",
                  "invitationStatus" : "ACCEPTED",
-                 "name" : "Henok",
+                 "name" : "Henok",	
                  "updatedBy" : "system",
                  "updatedDate" : "2022-02-21T20:40:28.930239",
                  "vipRecordId" : "3bfc5c85-97b5-40bf-bc2f-fdc5041edc41"
               }`
+
+ 4) POST  **/vip/create-no-invitation** This API endpoint is built to simulate failed invitation email integration 
+ 
+	>The solution I came up for this is to implement a scheduled batch job which is configured to run every 10sec *(for demo purpose)*
+	>This batch job when triggered it fetchs all vipRecords which **InvitationStatus = 'PENDING'** and it trys to send an invitation email
+ 	>If the email succeeds this time then the batch updates its  **InvitationStatus = 'PENDING_CONFIRMATION'** where from this point on It follows the normal 			flow Where the vip user gets the email then accepts or reject the invitation. 
+	>Incase the email failed again then the batch will try it again the next time it's triggered.
+
+	This process can be sumulated by this endpoint 
+	
+	open your terminal and run this command - please change the email address value to the one that you own 
+	
+	`curl --header "Content-Type: application/json" --request POST --data '{"name":"Henok_paga","email":"hsolomon@paga.com"}' http://localhost:9090/vip/create-no-invitation | json_pp` 
+
+	then after that quickly call `/vip/findAll ` endpoint and observe the vipRecords invitationStatus - >  it should be **'PENDING'**
+	
+	Then wait for a max 10sec and execute `/vip/findAll ` endpoint again , by this time the batch should have run in backend and should have already sent the 		invitation email .
+
+
+
+
+
+ 
